@@ -9,5 +9,18 @@ export class TripService {
     async getAll(): Promise<ITrip[]> {
         return await TripModel.find();
     }
+
+    async getById(id: string): Promise<ITrip | null> {
+        return await TripModel.findById(id);
+    }
+
+    async update(id: string, tripData: Partial<ITrip>): Promise<ITrip | null> {
+        return await TripModel.findByIdAndUpdate(id, tripData, { new: true });
+    }
+
+    async delete(id: string): Promise<ITrip | null> {
+        return await TripModel.findByIdAndDelete(id);
+    }
 }
+
 

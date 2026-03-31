@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import tripRoutes from "./routes/trip.routes";
+import { errorHandler } from "./middlewares/errorHandler";
 
 dotenv.config();
 
@@ -21,7 +22,9 @@ app.get("/", (req: Request, res: Response) => {
     res.send("API funcionando con TypeScript y MongoDB");
 });
 
+// Manejador de errores global
+app.use(errorHandler);
+
 app.listen(PORT, () => {
     console.log(`🚀 Servidor en http://localhost:${PORT}`);
 });
-

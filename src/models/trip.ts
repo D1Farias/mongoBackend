@@ -1,4 +1,5 @@
 import { Schema, model, Document } from "mongoose";
+import { z } from "zod";
 
 export interface ITrip extends Document {
     origen: string;
@@ -14,4 +15,12 @@ const TripSchema = new Schema<ITrip>({
     busLayout: { type: [[Number]], required: true }
 }, { timestamps: true });
 
-export const TripModel = model<ITrip>("Trip", TripSchema);
+export const TripModel = model<ITrip>("Trip", TripSchema);
+
+export const tripValidationSchema = z.object({
+    origen: z.string().min(3),
+    destino: z.string().min(3),
+    fecha: z.coerce.date(),
+    busLayout: z.array(z.array(z.number()))
+});
+
