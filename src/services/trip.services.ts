@@ -1,15 +1,13 @@
-import { Trip } from "../models/trip";
+import { ITrip, TripModel } from "../models/trip";
 
 export class TripService {
-    private trips: Trip[] = [];
-
-    create(trip: Trip): Trip {
-        this.trips.push(trip);
-        return trip;
+    async create(tripData: Partial<ITrip>): Promise<ITrip> {
+        const trip = new TripModel(tripData);
+        return await trip.save();
     }
 
-    getAll(): Trip[] {
-        return this.trips;
-
+    async getAll(): Promise<ITrip[]> {
+        return await TripModel.find();
     }
 }
+
