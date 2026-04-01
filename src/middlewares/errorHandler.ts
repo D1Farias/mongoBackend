@@ -10,19 +10,24 @@ export const errorHandler = (
 
     if (err.name === "ZodError") {
         return res.status(400).json({
-            message: "Error de validación",
-            errors: err.errors
+            message: "Los datos enviados no son válidos para esta operación",
+            error: err.errors
         });
     }
 
     if (err.name === "CastError") {
         return res.status(400).json({
-            message: "ID de recurso inválido"
+            message: "El formato del identificador proporcionado no es correcto",
+            error: err.message
         });
     }
 
     const status = err.status || 500;
-    const message = err.message || "Error interno del servidor";
+    const message = err.message || "Ha ocurrido un error inesperado en el servidor";
 
-    res.status(status).json({ message });
+    res.status(status).json({ 
+        message,
+        error: process.env.NODE_ENV === "development" ? err.stack : undefined 
+    });
 };
+

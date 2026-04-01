@@ -1,60 +1,141 @@
-import { Router, Request, Response } from "express";
-import { TripService } from "../services/trip.services";
-import { tripValidationSchema } from "../models/trip";
+import { Router } from "express";
+import { ViajeController } from "../controllers/viaje.controller";
 
 const router = Router();
-const tripService = new TripService();
 
-router.post("/", async (req: Request, res: Response) => {
-    try {
-        const validatedData = tripValidationSchema.parse(req.body);
-        const trip = await tripService.create(validatedData as any);
-        res.status(201).json(trip);
-    } catch (error: any) {
-        res.status(400).json({ message: error.errors || error.message });
-    }
-});
+/**
+ * @swagger
+ * /api/viajes:
+ *   post:
+ *     summary: Crea un nuevo viaje
+ *     tags: [Viajes]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Viaje'
+ *     responses:
+ *       201:
+ *         description: Viaje creado
+ *       400:
+ *         description: Error en los datos
+ */
+router.post("/", ViajeController.create);
 
-router.get("/", async (_req: Request, res: Response) => {
-    try {
-        const trips = await tripService.getAll();
-        res.status(200).json(trips);
-    } catch (error: any) {
-        res.status(500).json({ message: error.message });
-    }
-});
+/**
+ * @swagger
+ * /api/viajes:
+ *   get:
+ *     summary: Obtiene todos los viajes
+ *     tags: [Viajes]
+ *     responses:
+ *       200:
+ *         description: Lista de viajes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Viaje'
+ */
+router.get("/", ViajeController.getAll);
 
-router.get("/:id", async (req: Request, res: Response) => {
-    try {
-        const trip = await tripService.getById(req.params.id as string);
-        if (!trip) return res.status(404).json({ message: "Viaje no encontrado" });
-        res.status(200).json(trip);
-    } catch (error: any) {
-        res.status(500).json({ message: error.message });
-    }
-});
+/**
+ * @swagger
+ * /api/viajes/{id}:
+ *   get:
+ *     summary: Obtiene un viaje por ID
+ *     tags: [Viajes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: number
+ *     responses:
+ *       200:
+ *         description: Datos del viaje
+ *       404:
+ *         description: Viaje no encontrado
+ */
+router.get("/:id", ViajeController.getById);
 
-router.put("/:id", async (req: Request, res: Response) => {
-    try {
-        const validatedData = tripValidationSchema.partial().parse(req.body);
-        const trip = await tripService.update(req.params.id as string, validatedData as any);
-        if (!trip) return res.status(404).json({ message: "Viaje no encontrado" });
-        res.status(200).json(trip);
-    } catch (error: any) {
-        res.status(400).json({ message: error.errors || error.message });
-    }
-});
+/**
+ * @swagger
+ * /api/viajes/{id}:
+ *   put:
+ *     summary: Actualiza un viaje por ID
+ *     tags: [Viajes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: number
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Viaje'
+ *     responses:
+ *       200:
+ *         description: Viaje actualizado
+ */
+router.put("/:id", ViajeController.update);
 
-router.delete("/:id", async (req: Request, res: Response) => {
-    try {
-        const trip = await tripService.delete(req.params.id as string);
+/**
+ * @swagger
+ * /api/viajes/{id}:
+ *   delete:
+ *     summary: Elimina un viaje por ID
+ *     tags: [Viajes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: number
+ *     responses:
+ *       200:
+ *         description: Viaje eliminado
+ */
+router.delete("/:id", ViajeController.delete);
 
-        if (!trip) return res.status(404).json({ message: "Viaje no encontrado" });
-        res.status(200).json({ message: "Viaje eliminado correctamente" });
-    } catch (error: any) {
-        res.status(500).json({ message: error.message });
-    }
-});
+/**
+ * @swagger
+ * /api/viajes/{id}/reserva:
+ *   post:
+ *     summary: Reserva un asiento en un viaje y genera un Ticket
+ *     tags: [Viajes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: number
+ *     request_body:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               asiento:
+ *                 type: string
+ *                 example: "A1"
+ *               pasajero:
+ *                 type: string
+ *                 example: "Juan Pérez"
+ *     responses:
+ *       200:
+ *         description: Asiento reservado y Ticket generado
+ *       400:
+ *         description: Error en la reserva (ej. asiento ocupado o capacidad agotada)
+ */
+router.post("/:id/reserva", ViajeController.reserve);
+
 
 export default router;
+
 
