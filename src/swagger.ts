@@ -4,9 +4,9 @@ const options: swaggerJsdoc.Options = {
     definition: {
         openapi: "3.0.0",
         info: {
-            title: "Bus Reservation API",
-            version: "1.0.0",
-            description: "API para la gestión de buses y reserva de asientos en viajes.",
+            title: "Bus Reservation API (Multi-tramo)",
+            version: "2.5.0",
+            description: "API para la gestión de autobuses y reservas por tramos en español.",
         },
         servers: [
             {
@@ -16,39 +16,70 @@ const options: swaggerJsdoc.Options = {
         ],
         components: {
             schemas: {
-                Bus: {
+                RutaMaestra: {
                     type: "object",
                     properties: {
                         id: { type: "number", example: 1 },
-                        patente: { type: "string", example: "BBB-222" },
-                        modelo: { type: "string", example: "Modelo F-100" },
-                        capacidad: { type: "number", example: 40 },
-                        asientos: { 
-                            type: "array", 
-                            items: { type: "string" }, 
-                            example: ["A1", "A2", "B1", "B2"] 
-                        },
-                    },
+                        nombre: { type: "string", example: "Ruta Sur" },
+                        ciudades: {
+                            type: "array",
+                            items: {
+                                type: "object",
+                                properties: {
+                                    nombre: { type: "string", example: "Santiago" },
+                                    minutosOffset: { type: "number", example: 0 }
+                                }
+                            }
+                        }
+                    }
                 },
-                Viaje: {
+                LayoutBus: {
                     type: "object",
                     properties: {
                         id: { type: "number", example: 1 },
-                        busId: { type: "number", example: 1 },
-                        origen: { type: "string", example: "Madrid" },
-                        destino: { type: "string", example: "Barcelona" },
-                        fecha: { type: "string", example: "01/04/2026 15:30" },
-                        occupiedSeats: { 
-                            type: "array", 
-                            items: { type: "string" }, 
-                            example: ["A1"] 
-                        },
-                    },
+                        nombre: { type: "string", example: "Dos Pisos 40 Asientos" },
+                        pisos: { type: "number", example: 2 },
+                        asientos: {
+                            type: "array",
+                            items: {
+                                type: "object",
+                                properties: {
+                                    numeroAsiento: { type: "string", example: "1A" },
+                                    piso: { type: "number", example: 1 },
+                                    tipo: { type: "string", example: "Salón Cama" }
+                                }
+                            }
+                        }
+                    }
                 },
+                PlantillaServicio: {
+                    type: "object",
+                    properties: {
+                        id: { type: "number", example: 1 },
+                        rutaMaestraId: { type: "number", example: 1 },
+                        diasSemana: { type: "array", items: { type: "number" }, example: [1,2,3,4,5] },
+                        horaSalida: { type: "string", example: "08:30" },
+                        layoutBusId: { type: "number", example: 1 },
+                        descripcionTipoBus: { type: "string", example: "Semi Cama" },
+                        descripcionAsientoPrimero: { type: "string", example: "Premium" },
+                        precioPrimero: { type: "number", example: 15000 },
+                        terminalOrigen: { type: "string", example: "Terminal Sur" },
+                        terminalDestino: { type: "string", example: "Terminal principal" }
+                    }
+                },
+                Reserva: {
+                    type: "object",
+                    properties: {
+                        servicioId: { type: "number", example: 1 },
+                        numeroAsiento: { type: "string", example: "1A" },
+                        origen: { type: "string", example: "Santiago" },
+                        destino: { type: "string", example: "Talca" }
+                    }
+                }
             },
         },
     },
-    apis: ["./src/routes/*.ts"], // Ruta donde se encuentran los archivos con comentarios JSDoc
+    apis: ["./src/routes/*.ts"],
 };
 
 export const swaggerSpec = swaggerJsdoc(options);
