@@ -57,7 +57,7 @@ const options: swaggerJsdoc.Options = {
                     properties: {
                         id: { type: "number", example: 1 },
                         rutaMaestraId: { type: "number", example: 1 },
-                        diasSemana: { type: "array", items: { type: "number" }, example: [1,2,3,4,5] },
+                        diasSemana: { type: "array", items: { type: "string" }, example: ["lunes","martes","miércoles","jueves","viernes"] },
                         horaSalida: { type: "string", example: "08:30" },
                         layoutBusId: { type: "number", example: 1 },
                         descripcionTipoBus: { type: "string", example: "Semi Cama" },

@@ -51,4 +51,46 @@ router.get("/", ServiceTemplateController.getAll);
  */
 router.get("/:id", ServiceTemplateController.getById);
 
+/**
+ * @swagger
+ * /api/plantilla-servicio/{id}:
+ *   put:
+ *     summary: Actualiza una plantilla de servicio
+ *     tags: [Plantillas]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/PlantillaServicio'
+ *     responses:
+ *       200:
+ *         description: Plantilla actualizada
+ */
+router.put("/:id", ServiceTemplateController.update);
+
+/**
+ * @swagger
+ * /api/plantilla-servicio/{id}:
+ *   delete:
+ *     summary: Elimina una plantilla de servicio
+ *     tags: [Plantillas]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Plantilla eliminada
+ */
+router.delete("/:id", ServiceTemplateController.delete);
+
 export default router;

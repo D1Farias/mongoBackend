@@ -5,7 +5,7 @@ import { CounterModel } from "./counter";
 export interface IServiceTemplate extends Document {
     numericId: number;
     rutaMaestraId: number;
-    diasSemana: number[]; // 0 = Domingo, 1 = Lunes, ...
+    diasSemana: string[]; // ["lunes", "martes", ...]
     horaSalida: string; // formato "HH:mm"
     layoutBusId: number;
     descripcionTipoBus: string;
@@ -20,7 +20,7 @@ export interface IServiceTemplate extends Document {
 const ServiceTemplateSchema = new Schema<IServiceTemplate>({
     numericId: { type: Number, unique: true },
     rutaMaestraId: { type: Number, required: true },
-    diasSemana: { type: [Number], required: true },
+    diasSemana: { type: [String], required: true },
     horaSalida: { type: String, required: true },
     layoutBusId: { type: Number, required: true },
     descripcionTipoBus: { type: String, required: true },
@@ -76,7 +76,7 @@ export const ServiceTemplateModel = model<IServiceTemplate>("ServiceTemplate", S
 
 export const serviceTemplateValidationSchema = z.object({
     rutaMaestraId: z.number().min(1),
-    diasSemana: z.array(z.number().min(0).max(6)).min(1),
+    diasSemana: z.array(z.enum(["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"])).min(1),
     horaSalida: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Formato HH:mm"),
     layoutBusId: z.number().min(1),
     descripcionTipoBus: z.string().min(2),

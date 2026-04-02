@@ -131,4 +131,16 @@ export class ReservationController {
             res.status(500).json({ message: "Error interno", error });
         }
     }
+
+    static async delete(req: Request, res: Response) {
+        try {
+            const reservation = await ReservationModel.findOneAndDelete({ numericId: Number(req.params.id) });
+            if (!reservation) {
+                return res.status(404).json({ message: "Reserva no encontrada" });
+            }
+            res.status(200).json({ message: "Reserva eliminada físicamente de la base de datos" });
+        } catch (error) {
+            res.status(500).json({ message: "Error interno", error });
+        }
+    }
 }

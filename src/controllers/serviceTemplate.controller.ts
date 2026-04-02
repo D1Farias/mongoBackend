@@ -43,4 +43,42 @@ export class ServiceTemplateController {
             res.status(500).json({ message: "Error interno", error });
         }
     }
+
+    static async update(req: Request, res: Response) {
+        try {
+            const data = serviceTemplateValidationSchema.parse(req.body);
+            const template = await ServiceTemplateModel.findOneAndUpdate(
+                { numericId: Number(req.params.id) },
+                data,
+                { new: true, runValidators: true }
+            );
+
+            if (!template) {
+                return res.status(404).json({ message: "Plantilla no encontrada" });
+            }
+
+            res.status(200).json({
+                message: "Plantilla actualizada exitosamente",
+                data: template
+            });
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                res.status(400).json({ message: "Error de validación", errors: (error as any).errors });
+            } else {
+                res.status(500).json({ message: "Error interno", error });
+            }
+        }
+    }
+
+    static async delete(req: Request, res: Response) {
+        try {
+            const template = await ServiceTemplateModel.findOneAndDelete({ numericId: Number(req.params.id) });
+            if (!template) {
+                return res.status(404).json({ message: "Plantilla no encontrada" });
+            }
+            res.status(200).json({ message: "Plantilla eliminada exitosamente" });
+        } catch (error) {
+            res.status(500).json({ message: "Error interno", error });
+        }
+    }
 }

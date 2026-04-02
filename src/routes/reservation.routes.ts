@@ -71,4 +71,22 @@ router.post("/confirmar", ReservationController.confirm);
  */
 router.post("/cancelar", ReservationController.cancel);
 
+/**
+ * @swagger
+ * /api/reservas/{id}:
+ *   delete:
+ *     summary: Elimina físicamente una reserva de la base de datos
+ *     tags: [Reservas]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Reserva eliminada
+ */
+router.delete("/:id", ReservationController.delete);
+
 export default router;

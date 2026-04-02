@@ -5,6 +5,18 @@ const router = Router();
 
 /**
  * @swagger
+ * /api/servicios/todos:
+ *   get:
+ *     summary: Obtiene todos los servicios generados en la base de datos (Sin generar nuevos)
+ *     tags: [Servicios]
+ *     responses:
+ *       200:
+ *         description: Lista de todos los servicios físicos almacenados
+ */
+router.get("/todos", GeneratedServiceController.getAll);
+
+/**
+ * @swagger
  * /api/servicios:
  *   get:
  *     summary: Obtiene todos los servicios dinámicos disponibles para una fecha y tramo exacto
@@ -33,5 +45,23 @@ const router = Router();
  *         description: Lista de servicios con el tramo consultado
  */
 router.get("/", GeneratedServiceController.getServices);
+
+/**
+ * @swagger
+ * /api/servicios/{id}:
+ *   delete:
+ *     summary: Elimina un servicio generado específicamente
+ *     tags: [Servicios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Servicio eliminado
+ */
+router.delete("/:id", GeneratedServiceController.delete);
 
 export default router;

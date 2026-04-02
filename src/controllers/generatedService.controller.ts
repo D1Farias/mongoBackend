@@ -5,6 +5,15 @@ import { RouteMasterModel } from "../models/routeMaster";
 
 export class GeneratedServiceController {
 
+    static async getAll(req: Request, res: Response) {
+        try {
+            const services = await GeneratedServiceModel.find();
+            res.status(200).json({ data: services });
+        } catch (error) {
+            res.status(500).json({ message: "Error al obtener los servicios", error });
+        }
+    }
+
     static async getServices(req: Request, res: Response) {
         try {
             const origen = req.query.origen as string;
@@ -18,7 +27,9 @@ export class GeneratedServiceController {
             // Normalizar fecha
             const [year, month, day] = fechaStr.split("-").map(Number);
             const queriedDate = new Date(year, month - 1, day);
-            const dayOfWeek = queriedDate.getDay();
+            const dayOfWeekIndex = queriedDate.getDay();
+            const MAPA_DIAS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+            const nombreDia = MAPA_DIAS[dayOfWeekIndex];
 
             // Buscar RouteMasters que tengan origen y destino en el orden correcto
             const routeMasters = await RouteMasterModel.find();
@@ -28,7 +39,10 @@ export class GeneratedServiceController {
             });
 
             if (validRouteMasters.length === 0) {
-                return res.status(200).json({ data: [] }); // No hay ruta
+                return res.status(200).json({ 
+                    data: [], 
+                    message: `No existe una ruta directa configurada desde '${origen}' hacia '${destino}'.` 
+                });
             }
 
             const routeMasterIds = validRouteMasters.map(rm => rm.numericId);
@@ -36,20 +50,26 @@ export class GeneratedServiceController {
             // Buscar templates que operen hoy para esas rutas
             const templates = await ServiceTemplateModel.find({
                 rutaMaestraId: { $in: routeMasterIds },
-                diasSemana: dayOfWeek
+                diasSemana: nombreDia
             });
+
+            if (templates.length === 0) {
+                return res.status(200).json({ 
+                    data: [], 
+                    message: `La ruta existe, pero no hay servicios programados para los días ${nombreDia}.` 
+                });
+            }
 
             const results = [];
 
             for (const template of templates) {
-                // Verificar si ya existe el GeneratedService
+                // ... (resto de la lógica igual)
                 let generated = await GeneratedServiceModel.findOne({
                     plantillaServicioId: template.numericId,
                     fecha: queriedDate
                 });
 
                 if (!generated) {
-                    // Generarlo On-The-Fly
                     const routeM = validRouteMasters.find(rm => rm.numericId === template.rutaMaestraId);
                     if (!routeM) continue;
 
@@ -75,7 +95,6 @@ export class GeneratedServiceController {
                     await generated.save();
                 }
 
-                // Filtrar el tramo relevante para retornar
                 const cityOrigin = generated.ciudades.find(c => c.nombre === origen);
                 const cityDest = generated.ciudades.find(c => c.nombre === destino);
 
@@ -97,10 +116,30 @@ export class GeneratedServiceController {
             // Ordenar por hora de salida
             results.sort((a, b) => a.fechaSalida.getTime() - b.fechaSalida.getTime());
 
+            // Si por alguna razón el filtrado de tramos dejó la lista vacía
+            if (results.length === 0) {
+                return res.status(200).json({ 
+                    data: [], 
+                    message: "No se encontraron servicios disponibles para el tramo solicitado en esta fecha." 
+                });
+            }
+
             res.status(200).json({ data: results });
 
         } catch (error) {
             res.status(500).json({ message: "Error interno del servidor", error });
+        }
+    }
+
+    static async delete(req: Request, res: Response) {
+        try {
+            const service = await GeneratedServiceModel.findOneAndDelete({ numericId: Number(req.params.id) });
+            if (!service) {
+                return res.status(404).json({ message: "Servicio generado no encontrado" });
+            }
+            res.status(200).json({ message: "Servicio generado eliminado exitosamente" });
+        } catch (error) {
+            res.status(500).json({ message: "Error interno", error });
         }
     }
 }
