@@ -8,7 +8,32 @@ export class GeneratedServiceController {
     static async getAll(req: Request, res: Response) {
         try {
             const services = await GeneratedServiceModel.find();
-            res.status(200).json({ data: services });
+            const templates = await ServiceTemplateModel.find();
+
+            const formattedServices = services.map(service => {
+                const template = templates.find(t => t.numericId === service.plantillaServicioId);
+                
+                return {
+                    id_ServicioGenerado: service.numericId,
+                    fechaDeOperacion: service.fecha,
+                    detallesPlantilla: template ? {
+                        id_Plantilla: template.numericId,
+                        rutaAsignada: template.rutaMaestraId,
+                        busLayout: template.layoutBusId,
+                        tipoBus: template.descripcionTipoBus,
+                        precios: {
+                            primero: template.precioPrimero,
+                            segundo: template.precioSegundo
+                        }
+                    } : null,
+                    itinerarioFisicoDelBus: service.ciudades.map(c => ({
+                        ciudad: c.nombre,
+                        horaLlegada: c.horaLlegadaEstimada
+                    }))
+                };
+            });
+
+            res.status(200).json({ data: formattedServices });
         } catch (error) {
             res.status(500).json({ message: "Error al obtener los servicios", error });
         }
