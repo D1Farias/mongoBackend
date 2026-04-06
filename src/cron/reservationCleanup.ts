@@ -1,3 +1,4 @@
+/*
 import cron from "node-cron";
 import { ReservationModel } from "../models/reservation";
 
@@ -26,4 +27,4 @@ export const startReservationCleanupCron = () => {
     });
 
     console.log("⏰ Cron job de limpieza de reservas inicializado.");
-};
+}; */

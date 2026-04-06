@@ -8,7 +8,7 @@ import serviceRoutes from "./routes/service.routes";
 import reservationRoutes from "./routes/reservation.routes";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger";
-import { startReservationCleanupCron } from "./cron/reservationCleanup";
+// import { startReservationCleanupCron } from "./cron/reservationCleanup";
 
 import { errorHandler } from "./middlewares/errorHandler";
 
@@ -23,7 +23,7 @@ const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/bus_backen
 mongoose.connect(MONGO_URI)
     .then(() => {
         console.log("✅ Conectado a MongoDB");
-        startReservationCleanupCron();
+        // startReservationCleanupCron();
     })
     .catch((err) => console.error("❌ Error conectando a MongoDB:", err));
 

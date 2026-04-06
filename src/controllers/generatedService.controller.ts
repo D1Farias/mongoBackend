@@ -41,9 +41,7 @@ export class GeneratedServiceController {
 
     static async getServices(req: Request, res: Response) {
         try {
-            const origen = req.query.origen as string;
-            const destino = req.query.destino as string;
-            const fechaStr = req.query.fecha as string;
+            const { origen, destino, fecha: fechaStr } = req.body;
 
             if (!origen || !destino || !fechaStr) {
                 return res.status(400).json({ message: "Se requiere origen, destino y fecha (YYYY-MM-DD)" });

@@ -5,7 +5,7 @@ const router = Router();
 
 /**
  * @swagger
- * /api/servicios/todos:
+ * /api/servicios:
  *   get:
  *     summary: Obtiene todos los servicios generados en la base de datos (Sin generar nuevos)
  *     tags: [Servicios]
@@ -13,38 +13,41 @@ const router = Router();
  *       200:
  *         description: Lista de todos los servicios físicos almacenados
  */
-router.get("/todos", GeneratedServiceController.getAll);
+router.get("/", GeneratedServiceController.getAll);
 
 /**
  * @swagger
- * /api/servicios:
- *   get:
- *     summary: Obtiene todos los servicios dinámicos disponibles para una fecha y tramo exacto
+ * /api/servicios/buscar:
+ *   post:
+ *     summary: Obtiene (y genera si no existe) los servicios disponibles para una fecha y tramo
  *     tags: [Servicios]
- *     parameters:
- *       - in: query
- *         name: origen
- *         required: true
- *         schema:
- *           type: string
- *         description: Ciudad de origen
- *       - in: query
- *         name: destino
- *         required: true
- *         schema:
- *           type: string
- *         description: Ciudad de destino
- *       - in: query
- *         name: fecha
- *         required: true
- *         schema:
- *           type: string
- *         description: Fecha de búsqueda (YYYY-MM-DD)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - origen
+ *               - destino
+ *               - fecha
+ *             properties:
+ *               origen:
+ *                 type: string
+ *                 example: "Santiago"
+ *               destino:
+ *                 type: string
+ *                 example: "Talca"
+ *               fecha:
+ *                 type: string
+ *                 example: "2024-05-10"
+ *                 description: Formato YYYY-MM-DD
  *     responses:
  *       200:
  *         description: Lista de servicios con el tramo consultado
  */
-router.get("/", GeneratedServiceController.getServices);
+router.post("/buscar", GeneratedServiceController.getServices);
+
 
 /**
  * @swagger

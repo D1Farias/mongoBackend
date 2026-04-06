@@ -60,3 +60,4 @@ export const busLayoutValidationSchema = z.object({
         tipo: z.string().min(2)
     })).min(1)
 });
+
